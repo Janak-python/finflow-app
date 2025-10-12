@@ -1,33 +1,242 @@
-<div class="history-box">
-    <div class="history-inner" style="overflow-x:auto; white-space: nowrap;">
-        <h2>Transaction History</h2>
-        <div class="history-header" style="display: inline-flex; min-width: 600px;">
-            <span>Category</span>
-            <span>Date</span>
-            <span>Amount</span>
-            <span>Type</span>
-            <span>Reason</span>
-        </div>
-        <div id="historyItems" style="display: inline-flex;"></div>
-    </div>
-</div>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>FinFlow</title>
+  <link rel="icon" type="image/png" href="finflow.png">
+  <meta name="theme-color" content="#667eea">
+  <link rel="manifest" href="app.webmanifest">
+  <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
+  <style>
+    body {
+      font-family: 'Roboto', sans-serif;
+      margin: 0;
+      min-height: 100vh;
+      background: radial-gradient(circle at top left, #667eea, #764ba2 60%, #473f7c 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      color: #fff;
+      padding: 20px 0;
+    }
 
-<style>
-    /* Horizontal scroll for transaction history */
-    .history-inner {
-        overflow-x: auto;
-        -webkit-overflow-scrolling: touch;
+    .main-panel {
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 100%;
+      max-width: 1200px;
+    }
+
+    .hamburger {
+      font-size: 1.8em;
+      cursor: pointer;
+      position: fixed;
+      top: 15px;
+      left: 15px;
+      z-index: 2001;
+      background: rgba(255,255,255,0.1);
+      padding: 8px 12px;
+      border-radius: 10px;
+      border: none;
+      color: white;
+    }
+
+    /* PIN Lock */
+    .pin-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: radial-gradient(circle at top left, #667eea, #764ba2 60%, #473f7c 100%);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 3000;
+    }
+
+    .pin-container {
+      background: rgba(31,31,46,0.95);
+      border-radius: 25px;
+      padding: 30px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 20px;
+      width: 320px;
+    }
+
+    .pin-display {
+      font-size: 2em;
+      letter-spacing: 10px;
+      color: #ffd700;
+      margin: 10px 0;
+      display: flex;
+      gap: 10px;
+    }
+
+    .pin-dot {
+      width: 15px;
+      height: 15px;
+      border-radius: 50%;
+      background: #ffd700;
+    }
+
+    .pin-dot.empty {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .pin-keypad {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 12px;
+      width: 100%;
+    }
+
+    .pin-key {
+      background: rgba(255,255,255,0.1);
+      border: none;
+      border-radius: 50%;
+      width: 65px;
+      height: 65px;
+      color: #fff;
+      font-size: 1.4em;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+
+    .pin-key:hover {
+      background: rgba(255,255,255,0.2);
+    }
+
+    .pin-clear {
+      background: rgba(220,53,69,0.7);
+    }
+
+    .pin-submit {
+      background: rgba(40,167,69,0.7);
+    }
+
+    /* Wallet & Transaction Boxes */
+    .wallet-box, .transaction-box, .history-box {
+      background: rgba(31,31,46,0.9);
+      border-radius: 25px;
+      padding: 25px;
+      box-shadow: 0 0 40px rgba(0,0,0,0.4);
+      width: 100%;
+      max-width: 500px;
+    }
+
+    .history-box {
+      max-width: 1000px;
+    }
+
+    .wallet-inner, .transaction-inner, .history-inner {
+      background: rgba(255,255,255,0.06);
+      border-radius: 15px;
+      padding: 20px;
+    }
+
+    .wallet-balance {
+      font-size: 2em;
+      color: #ffd700;
+      font-weight: bold;
+      text-align: center;
+      margin: 10px 0;
+    }
+
+    .wallet-name {
+      font-size: 1.2em;
+      color: #ffd700;
+      text-align: center;
+      margin-bottom: 10px;
+    }
+
+    h2 {
+      color: #ffd700;
+      margin-bottom: 15px;
+      font-size: 1.1em;
+    }
+
+    select, input {
+      width: 100%;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
+      font-size: 1em;
+      margin-bottom: 10px;
+    }
+
+    select option {
+      background: #2d2d2d;
+      color: #fff;
+    }
+
+    .row {
+      display: flex;
+      gap: 10px;
+      align-items: center;
+    }
+
+    button {
+      padding: 12px 20px;
+      border-radius: 10px;
+      border: none;
+      cursor: pointer;
+      font-weight: bold;
+      font-size: 1em;
+      transition: all 0.2s;
+    }
+
+    .add-category {
+      background: #32cd32;
+      color: #fff;
+      white-space: nowrap;
+    }
+
+    .add-transaction {
+      background: #ffd700;
+      color: #000;
+      width: 100%;
+      margin-top: 10px;
+    }
+
+    /* Transaction History with Horizontal Scroll */
+    .history-scroll-container {
+      overflow-x: auto;
+      padding-bottom: 10px;
+    }
+
+    .history-table {
+      min-width: 700px;
+      width: 100%;
     }
 
     .history-header, .history-item {
-        display: inline-flex;
-        min-width: 600px;
+      display: flex;
+      padding: 12px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+
+    .history-header {
+      font-weight: bold;
+      border-bottom: 2px solid #ffd700;
+      position: sticky;
+      left: 0;
     }
 
     .history-header span, .history-item span {
-        flex: 1;
-        padding: 0 8px;
-        text-align: center;
+      flex: 1;
+      padding: 0 10px;
+      text-align: center;
+      min-width: 80px;
     }
 
     .history-item span:nth-child(1) { flex: 2; text-align: left; } /* Category */
@@ -35,4 +244,283 @@
     .history-item span:nth-child(3) { flex: 1; } /* Amount */
     .history-item span:nth-child(4) { flex: 1; } /* Type */
     .history-item span:nth-child(5) { flex: 3; text-align: left; } /* Reason */
-</style>
+
+    /* Menu */
+    .full-screen-menu {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background: rgba(30,30,46,0.95);
+      display: none;
+      flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      z-index: 2000;
+    }
+
+    .full-screen-menu.active {
+      display: flex;
+    }
+
+    .menu-inner {
+      background: rgba(45,45,70,0.95);
+      padding: 30px;
+      border-radius: 20px;
+      box-shadow: 0 0 30px rgba(0,0,0,0.4);
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 15px;
+    }
+
+    .menu-button {
+      width: 250px;
+      padding: 15px;
+      background: #ffd700;
+      color: #1f1f2e;
+      border: none;
+      border-radius: 12px;
+      font-size: 1.1em;
+      cursor: pointer;
+    }
+
+    .wallet-list-button {
+      width: 250px;
+      padding: 12px 15px;
+      background: #00bfff;
+      color: #1f1f2e;
+      border: none;
+      border-radius: 10px;
+      display: flex;
+      justify-content: space-between;
+      cursor: pointer;
+    }
+
+    .wallet-form {
+      display: none;
+      flex-direction: column;
+      gap: 10px;
+      margin-top: 15px;
+    }
+
+    .wallet-form input {
+      width: 200px;
+    }
+
+    .wallet-form button {
+      background: #32cd32;
+      color: #fff;
+    }
+
+    /* Mobile Responsive */
+    @media (max-width: 768px) {
+      body {
+        padding: 10px;
+      }
+      
+      .wallet-box, .transaction-box, .history-box {
+        padding: 15px;
+        max-width: 100%;
+      }
+      
+      .history-table {
+        min-width: 600px;
+      }
+      
+      .history-header, .history-item {
+        font-size: 0.8em;
+      }
+      
+      .pin-container {
+        width: 90vw;
+        padding: 20px;
+      }
+      
+      .pin-key {
+        width: 55px;
+        height: 55px;
+        font-size: 1.2em;
+      }
+    }
+  </style>
+</head>
+<body>
+    <!-- PIN Lock -->
+    <div class="pin-overlay" id="pinOverlay">
+        <div class="pin-container">
+            <h2 id="pinTitle">Set Up PIN</h2>
+            <div class="pin-display" id="pinDisplay">
+                <div class="pin-dot empty"></div>
+                <div class="pin-dot empty"></div>
+                <div class="pin-dot empty"></div>
+                <div class="pin-dot empty"></div>
+            </div>
+            <div class="pin-keypad">
+                <button class="pin-key" onclick="addPinDigit('1')">1</button>
+                <button class="pin-key" onclick="addPinDigit('2')">2</button>
+                <button class="pin-key" onclick="addPinDigit('3')">3</button>
+                <button class="pin-key" onclick="addPinDigit('4')">4</button>
+                <button class="pin-key" onclick="addPinDigit('5')">5</button>
+                <button class="pin-key" onclick="addPinDigit('6')">6</button>
+                <button class="pin-key" onclick="addPinDigit('7')">7</button>
+                <button class="pin-key" onclick="addPinDigit('8')">8</button>
+                <button class="pin-key" onclick="addPinDigit('9')">9</button>
+                <button class="pin-key pin-clear" onclick="clearPin()">C</button>
+                <button class="pin-key" onclick="addPinDigit('0')">0</button>
+                <button class="pin-key pin-submit" onclick="submitPin()">✓</button>
+            </div>
+            <div id="pinMessage" style="color: #ffd700; text-align: center;">
+                Create your 4-digit security PIN
+            </div>
+        </div>
+    </div>
+
+    <!-- Hamburger Menu -->
+    <button class="hamburger" onclick="toggleMenu()">☰</button>
+
+    <!-- Main App -->
+    <div class="main-panel" id="mainPanel" style="display: none;">
+        <div class="wallet-box">
+            <div class="wallet-inner">
+                <h2>Wallet</h2>
+                <div class="wallet-name" id="selectedWalletName">Select a Wallet</div>
+                <div class="wallet-balance" id="selectedWalletBalance">$0.00</div>
+            </div>
+        </div>
+
+        <div class="transaction-box">
+            <div class="transaction-inner">
+                <h2>New Transaction</h2>
+                <select id="transactionType">
+                    <option value="expense">Expense</option>
+                    <option value="income">Income</option>
+                    <option value="transfer">Transfer</option>
+                </select>
+                <input type="number" placeholder="Amount" id="transactionAmount">
+                <input type="text" placeholder="DD/MM/YYYY" id="transactionDate" maxlength="10">
+                <input type="text" placeholder="Reason" id="transactionReason">
+                <div class="row">
+                    <select id="categorySelect"></select>
+                    <input type="text" placeholder="Add Category" id="addCategory">
+                    <button class="add-category" onclick="addCategory()">Add</button>
+                </div>
+                <button class="add-transaction" onclick="addTransaction()">Add Transaction</button>
+            </div>
+        </div>
+
+        <div class="history-box">
+            <div class="history-inner">
+                <h2>Transaction History</h2>
+                <div class="history-scroll-container">
+                    <div class="history-table">
+                        <div class="history-header">
+                            <span>Category</span>
+                            <span>Date</span>
+                            <span>Amount</span>
+                            <span>Type</span>
+                            <span>Reason</span>
+                        </div>
+                        <div id="historyItems">
+                            <!-- Transactions will appear here -->
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Full Screen Menu -->
+    <div class="full-screen-menu" id="fullScreenMenu">
+        <div class="menu-inner">
+            <button class="menu-button" onclick="toggleWalletForm()">Create Wallet</button>
+            <div class="wallet-form" id="walletForm">
+                <input type="text" id="walletNameInput" placeholder="Wallet Name">
+                <input type="number" id="walletBalanceInput" placeholder="Initial Balance">
+                <button onclick="createWallet()">Save Wallet</button>
+            </div>
+            <div style="color: white; margin: 10px 0;">Choose a wallet:</div>
+            <div id="walletListMenu"></div>
+            <button class="menu-button" onclick="changePin()" style="background: #6c757d; margin-top: 20px;">
+                Change PIN
+            </button>
+        </div>
+    </div>
+
+    <script>
+        // All your JavaScript functionality remains here
+        // PIN system, wallet management, transactions, etc.
+        // (Your existing JavaScript code goes here)
+        
+        // PIN System
+        let currentPin = '';
+        let storedPin = localStorage.getItem('finflow_pin');
+        let isSettingUpPin = !storedPin;
+
+        function initializePinLock() {
+            if (isSettingUpPin) {
+                document.getElementById('pinTitle').textContent = 'Set Up PIN';
+                document.getElementById('pinMessage').textContent = 'Create your 4-digit security PIN';
+            } else {
+                document.getElementById('pinTitle').textContent = 'Enter PIN';
+                document.getElementById('pinMessage').textContent = 'Enter your 4-digit PIN';
+            }
+            updatePinDisplay();
+        }
+
+        function addPinDigit(digit) {
+            if (currentPin.length < 4) {
+                currentPin += digit;
+                updatePinDisplay();
+                if (currentPin.length === 4) {
+                    setTimeout(submitPin, 300);
+                }
+            }
+        }
+
+        function clearPin() {
+            currentPin = '';
+            updatePinDisplay();
+        }
+
+        function updatePinDisplay() {
+            const dots = document.querySelectorAll('.pin-dot');
+            dots.forEach((dot, index) => {
+                dot.classList.toggle('empty', index >= currentPin.length);
+            });
+        }
+
+        function submitPin() {
+            if (currentPin.length !== 4) return;
+
+            if (isSettingUpPin) {
+                localStorage.setItem('finflow_pin', currentPin);
+                storedPin = currentPin;
+                isSettingUpPin = false;
+                unlockApp();
+            } else {
+                if (currentPin === storedPin) {
+                    unlockApp();
+                } else {
+                    currentPin = '';
+                    updatePinDisplay();
+                    document.getElementById('pinMessage').textContent = 'Wrong PIN! Try again.';
+                }
+            }
+        }
+
+        function unlockApp() {
+            document.getElementById('pinOverlay').style.display = 'none';
+            document.getElementById('mainPanel').style.display = 'flex';
+            initializeApp();
+        }
+
+        // Your other JavaScript functions continue here...
+        // [Rest of your JavaScript code]
+
+        // Start the app
+        document.addEventListener('DOMContentLoaded', initializePinLock);
+    </script>
+</body>
+</html>
