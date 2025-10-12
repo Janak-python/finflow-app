@@ -9,16 +9,21 @@
   <link rel="manifest" href="app.webmanifest">
   <link href="https://fonts.googleapis.com/css2?family=Roboto:wght@400;700&display=swap" rel="stylesheet">
   <style>
+    * {
+      margin: 0;
+      padding: 0;
+      box-sizing: border-box;
+    }
+
     body {
       font-family: 'Roboto', sans-serif;
-      margin: 0;
       min-height: 100vh;
       background: radial-gradient(circle at top left, #667eea, #764ba2 60%, #473f7c 100%);
       display: flex;
       flex-direction: column;
       align-items: center;
       color: #fff;
-      padding: 20px 0;
+      padding: 20px;
     }
 
     .main-panel {
@@ -239,11 +244,11 @@
       min-width: 80px;
     }
 
-    .history-item span:nth-child(1) { flex: 2; text-align: left; } /* Category */
-    .history-item span:nth-child(2) { flex: 1.5; } /* Date */
-    .history-item span:nth-child(3) { flex: 1; } /* Amount */
-    .history-item span:nth-child(4) { flex: 1; } /* Type */
-    .history-item span:nth-child(5) { flex: 3; text-align: left; } /* Reason */
+    .history-item span:nth-child(1) { flex: 2; text-align: left; }
+    .history-item span:nth-child(2) { flex: 1.5; }
+    .history-item span:nth-child(3) { flex: 1; }
+    .history-item span:nth-child(4) { flex: 1; }
+    .history-item span:nth-child(5) { flex: 3; text-align: left; }
 
     /* Menu */
     .full-screen-menu {
@@ -347,180 +352,369 @@
   </style>
 </head>
 <body>
-    <!-- PIN Lock -->
-    <div class="pin-overlay" id="pinOverlay">
-        <div class="pin-container">
-            <h2 id="pinTitle">Set Up PIN</h2>
-            <div class="pin-display" id="pinDisplay">
-                <div class="pin-dot empty"></div>
-                <div class="pin-dot empty"></div>
-                <div class="pin-dot empty"></div>
-                <div class="pin-dot empty"></div>
-            </div>
-            <div class="pin-keypad">
-                <button class="pin-key" onclick="addPinDigit('1')">1</button>
-                <button class="pin-key" onclick="addPinDigit('2')">2</button>
-                <button class="pin-key" onclick="addPinDigit('3')">3</button>
-                <button class="pin-key" onclick="addPinDigit('4')">4</button>
-                <button class="pin-key" onclick="addPinDigit('5')">5</button>
-                <button class="pin-key" onclick="addPinDigit('6')">6</button>
-                <button class="pin-key" onclick="addPinDigit('7')">7</button>
-                <button class="pin-key" onclick="addPinDigit('8')">8</button>
-                <button class="pin-key" onclick="addPinDigit('9')">9</button>
-                <button class="pin-key pin-clear" onclick="clearPin()">C</button>
-                <button class="pin-key" onclick="addPinDigit('0')">0</button>
-                <button class="pin-key pin-submit" onclick="submitPin()">✓</button>
-            </div>
-            <div id="pinMessage" style="color: #ffd700; text-align: center;">
-                Create your 4-digit security PIN
-            </div>
-        </div>
+  <!-- PIN Lock -->
+  <div class="pin-overlay" id="pinOverlay">
+    <div class="pin-container">
+      <h2 id="pinTitle">Set Up PIN</h2>
+      <div class="pin-display" id="pinDisplay">
+        <div class="pin-dot empty"></div>
+        <div class="pin-dot empty"></div>
+        <div class="pin-dot empty"></div>
+        <div class="pin-dot empty"></div>
+      </div>
+      <div class="pin-keypad">
+        <button class="pin-key" onclick="addPinDigit('1')">1</button>
+        <button class="pin-key" onclick="addPinDigit('2')">2</button>
+        <button class="pin-key" onclick="addPinDigit('3')">3</button>
+        <button class="pin-key" onclick="addPinDigit('4')">4</button>
+        <button class="pin-key" onclick="addPinDigit('5')">5</button>
+        <button class="pin-key" onclick="addPinDigit('6')">6</button>
+        <button class="pin-key" onclick="addPinDigit('7')">7</button>
+        <button class="pin-key" onclick="addPinDigit('8')">8</button>
+        <button class="pin-key" onclick="addPinDigit('9')">9</button>
+        <button class="pin-key pin-clear" onclick="clearPin()">C</button>
+        <button class="pin-key" onclick="addPinDigit('0')">0</button>
+        <button class="pin-key pin-submit" onclick="submitPin()">✓</button>
+      </div>
+      <div id="pinMessage" style="color: #ffd700; text-align: center;">
+        Create your 4-digit security PIN
+      </div>
+    </div>
+  </div>
+
+  <!-- Hamburger Menu -->
+  <button class="hamburger" onclick="toggleMenu()">☰</button>
+
+  <!-- Main App -->
+  <div class="main-panel" id="mainPanel" style="display: none;">
+    <div class="wallet-box">
+      <div class="wallet-inner">
+        <h2>Wallet</h2>
+        <div class="wallet-name" id="selectedWalletName">Select a Wallet</div>
+        <div class="wallet-balance" id="selectedWalletBalance">$0.00</div>
+      </div>
     </div>
 
-    <!-- Hamburger Menu -->
-    <button class="hamburger" onclick="toggleMenu()">☰</button>
-
-    <!-- Main App -->
-    <div class="main-panel" id="mainPanel" style="display: none;">
-        <div class="wallet-box">
-            <div class="wallet-inner">
-                <h2>Wallet</h2>
-                <div class="wallet-name" id="selectedWalletName">Select a Wallet</div>
-                <div class="wallet-balance" id="selectedWalletBalance">$0.00</div>
-            </div>
+    <div class="transaction-box">
+      <div class="transaction-inner">
+        <h2>New Transaction</h2>
+        <select id="transactionType">
+          <option value="expense">Expense</option>
+          <option value="income">Income</option>
+          <option value="transfer">Transfer</option>
+        </select>
+        <input type="number" placeholder="Amount" id="transactionAmount">
+        <input type="text" placeholder="DD/MM/YYYY" id="transactionDate" maxlength="10">
+        <input type="text" placeholder="Reason" id="transactionReason">
+        <div class="row">
+          <select id="categorySelect"></select>
+          <input type="text" placeholder="Add Category" id="addCategory">
+          <button class="add-category" onclick="addCategory()">Add</button>
         </div>
-
-        <div class="transaction-box">
-            <div class="transaction-inner">
-                <h2>New Transaction</h2>
-                <select id="transactionType">
-                    <option value="expense">Expense</option>
-                    <option value="income">Income</option>
-                    <option value="transfer">Transfer</option>
-                </select>
-                <input type="number" placeholder="Amount" id="transactionAmount">
-                <input type="text" placeholder="DD/MM/YYYY" id="transactionDate" maxlength="10">
-                <input type="text" placeholder="Reason" id="transactionReason">
-                <div class="row">
-                    <select id="categorySelect"></select>
-                    <input type="text" placeholder="Add Category" id="addCategory">
-                    <button class="add-category" onclick="addCategory()">Add</button>
-                </div>
-                <button class="add-transaction" onclick="addTransaction()">Add Transaction</button>
-            </div>
-        </div>
-
-        <div class="history-box">
-            <div class="history-inner">
-                <h2>Transaction History</h2>
-                <div class="history-scroll-container">
-                    <div class="history-table">
-                        <div class="history-header">
-                            <span>Category</span>
-                            <span>Date</span>
-                            <span>Amount</span>
-                            <span>Type</span>
-                            <span>Reason</span>
-                        </div>
-                        <div id="historyItems">
-                            <!-- Transactions will appear here -->
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
+        <button class="add-transaction" onclick="addTransaction()">Add Transaction</button>
+      </div>
     </div>
 
-    <!-- Full Screen Menu -->
-    <div class="full-screen-menu" id="fullScreenMenu">
-        <div class="menu-inner">
-            <button class="menu-button" onclick="toggleWalletForm()">Create Wallet</button>
-            <div class="wallet-form" id="walletForm">
-                <input type="text" id="walletNameInput" placeholder="Wallet Name">
-                <input type="number" id="walletBalanceInput" placeholder="Initial Balance">
-                <button onclick="createWallet()">Save Wallet</button>
+    <div class="history-box">
+      <div class="history-inner">
+        <h2>Transaction History</h2>
+        <div class="history-scroll-container">
+          <div class="history-table">
+            <div class="history-header">
+              <span>Category</span>
+              <span>Date</span>
+              <span>Amount</span>
+              <span>Type</span>
+              <span>Reason</span>
             </div>
-            <div style="color: white; margin: 10px 0;">Choose a wallet:</div>
-            <div id="walletListMenu"></div>
-            <button class="menu-button" onclick="changePin()" style="background: #6c757d; margin-top: 20px;">
-                Change PIN
-            </button>
+            <div id="historyItems">
+              <!-- Transactions will appear here -->
+            </div>
+          </div>
         </div>
+      </div>
     </div>
+  </div>
 
-    <script>
-        // All your JavaScript functionality remains here
-        // PIN system, wallet management, transactions, etc.
-        // (Your existing JavaScript code goes here)
-        
-        // PIN System
-        let currentPin = '';
-        let storedPin = localStorage.getItem('finflow_pin');
-        let isSettingUpPin = !storedPin;
+  <!-- Full Screen Menu -->
+  <div class="full-screen-menu" id="fullScreenMenu" onclick="closeMenuOnBackground(event)">
+    <div class="menu-inner" onclick="event.stopPropagation()">
+      <button class="menu-button" onclick="toggleWalletForm()">Create Wallet</button>
+      <div class="wallet-form" id="walletForm">
+        <input type="text" id="walletNameInput" placeholder="Wallet Name">
+        <input type="number" id="walletBalanceInput" placeholder="Initial Balance">
+        <button onclick="createWallet()">Save Wallet</button>
+      </div>
+      <div style="color: white; margin: 10px 0;">Choose a wallet:</div>
+      <div id="walletListMenu"></div>
+      <button class="menu-button" onclick="changePin()" style="background: #6c757d; margin-top: 20px;">
+        Change PIN
+      </button>
+    </div>
+  </div>
 
-        function initializePinLock() {
-            if (isSettingUpPin) {
-                document.getElementById('pinTitle').textContent = 'Set Up PIN';
-                document.getElementById('pinMessage').textContent = 'Create your 4-digit security PIN';
-            } else {
-                document.getElementById('pinTitle').textContent = 'Enter PIN';
-                document.getElementById('pinMessage').textContent = 'Enter your 4-digit PIN';
-            }
-            updatePinDisplay();
+  <script>
+    // PIN System
+    let currentPin = '';
+    let storedPin = localStorage.getItem('finflow_pin');
+    let isSettingUpPin = !storedPin;
+    let pinAttempts = 0;
+
+    // Data
+    let wallets = JSON.parse(localStorage.getItem('wallets')) || [];
+    let selectedWalletIndex = localStorage.getItem('selectedWalletIndex');
+    let categories = JSON.parse(localStorage.getItem('categories')) || ['Food', 'Transport', 'Shopping', 'Entertainment'];
+    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+
+    // PIN Functions
+    function initializePinLock() {
+      if (isSettingUpPin) {
+        document.getElementById('pinTitle').textContent = 'Set Up PIN';
+        document.getElementById('pinMessage').textContent = 'Create your 4-digit security PIN';
+      } else {
+        document.getElementById('pinTitle').textContent = 'Enter PIN';
+        document.getElementById('pinMessage').textContent = 'Enter your 4-digit PIN';
+      }
+      updatePinDisplay();
+    }
+
+    function addPinDigit(digit) {
+      if (currentPin.length < 4) {
+        currentPin += digit;
+        updatePinDisplay();
+        if (currentPin.length === 4) {
+          setTimeout(submitPin, 300);
         }
+      }
+    }
 
-        function addPinDigit(digit) {
-            if (currentPin.length < 4) {
-                currentPin += digit;
-                updatePinDisplay();
-                if (currentPin.length === 4) {
-                    setTimeout(submitPin, 300);
-                }
-            }
+    function clearPin() {
+      currentPin = '';
+      updatePinDisplay();
+    }
+
+    function updatePinDisplay() {
+      const dots = document.querySelectorAll('.pin-dot');
+      dots.forEach((dot, index) => {
+        dot.classList.toggle('empty', index >= currentPin.length);
+      });
+    }
+
+    function submitPin() {
+      if (currentPin.length !== 4) return;
+
+      if (isSettingUpPin) {
+        localStorage.setItem('finflow_pin', currentPin);
+        storedPin = currentPin;
+        isSettingUpPin = false;
+        unlockApp();
+      } else {
+        if (currentPin === storedPin) {
+          pinAttempts = 0;
+          unlockApp();
+        } else {
+          pinAttempts++;
+          currentPin = '';
+          updatePinDisplay();
+          document.getElementById('pinMessage').textContent = `Wrong PIN! Attempt ${pinAttempts}/3`;
+          if (pinAttempts >= 3) {
+            document.getElementById('pinMessage').textContent = 'Too many attempts. Refresh page.';
+            document.querySelectorAll('.pin-key').forEach(key => key.disabled = true);
+          }
         }
+      }
+    }
 
-        function clearPin() {
-            currentPin = '';
-            updatePinDisplay();
+    function unlockApp() {
+      document.getElementById('pinOverlay').style.display = 'none';
+      document.getElementById('mainPanel').style.display = 'flex';
+      initializeApp();
+    }
+
+    // Menu Functions
+    function toggleMenu() {
+      const menu = document.getElementById('fullScreenMenu');
+      menu.classList.toggle('active');
+      renderMenuWallets();
+    }
+
+    function closeMenuOnBackground(e) {
+      if (e.target.id === 'fullScreenMenu') {
+        document.getElementById('fullScreenMenu').classList.remove('active');
+      }
+    }
+
+    // App Functions
+    function initializeApp() {
+      initializeCategories();
+      initializeTransactionHistory();
+      renderMenuWallets();
+      updateSelectedWalletBox();
+      
+      // Date formatting
+      document.getElementById('transactionDate').addEventListener('input', function(e) {
+        let val = e.target.value.replace(/\D/g, '');
+        if (val.length >= 3) val = val.slice(0,2) + '/' + val.slice(2);
+        if (val.length >= 6) val = val.slice(0,5) + '/' + val.slice(5);
+        e.target.value = val;
+      });
+    }
+
+    function initializeCategories() {
+      const select = document.getElementById('categorySelect');
+      select.innerHTML = '';
+      categories.forEach(cat => {
+        const option = document.createElement('option');
+        option.value = cat;
+        option.textContent = cat;
+        select.appendChild(option);
+      });
+    }
+
+    function initializeTransactionHistory() {
+      const container = document.getElementById('historyItems');
+      container.innerHTML = '';
+      transactions.forEach(transaction => {
+        const item = document.createElement('div');
+        item.className = 'history-item';
+        item.innerHTML = `
+          <span>${transaction.category}</span>
+          <span>${transaction.date}</span>
+          <span>${transaction.amount}</span>
+          <span>${transaction.type}</span>
+          <span>${transaction.reason}</span>
+        `;
+        container.appendChild(item);
+      });
+    }
+
+    function addCategory() {
+      const input = document.getElementById('addCategory');
+      const value = input.value.trim();
+      if (value && !categories.includes(value)) {
+        categories.push(value);
+        localStorage.setItem('categories', JSON.stringify(categories));
+        initializeCategories();
+        input.value = '';
+      }
+    }
+
+    function addTransaction() {
+      const type = document.getElementById('transactionType').value;
+      const amount = document.getElementById('transactionAmount').value;
+      const date = document.getElementById('transactionDate').value;
+      const category = document.getElementById('categorySelect').value;
+      const reason = document.getElementById('transactionReason').value;
+
+      if (!type || !amount || !date || !category) {
+        alert('Please fill all fields');
+        return;
+      }
+
+      const transaction = { type, amount, date, category, reason, walletIndex: selectedWalletIndex };
+      transactions.push(transaction);
+      localStorage.setItem('transactions', JSON.stringify(transactions));
+
+      // Update wallet balance
+      if (selectedWalletIndex !== null) {
+        const wallet = wallets[selectedWalletIndex];
+        const amountNum = parseFloat(amount);
+        if (type === 'income') wallet.balance += amountNum;
+        else if (type === 'expense') wallet.balance -= amountNum;
+        localStorage.setItem('wallets', JSON.stringify(wallets));
+        updateSelectedWalletBox();
+        renderMenuWallets();
+      }
+
+      // Add to UI
+      const container = document.getElementById('historyItems');
+      const item = document.createElement('div');
+      item.className = 'history-item';
+      item.innerHTML = `
+        <span>${category}</span>
+        <span>${date}</span>
+        <span>${amount}</span>
+        <span>${type}</span>
+        <span>${reason}</span>
+      `;
+      container.appendChild(item);
+
+      // Clear form
+      document.getElementById('transactionAmount').value = '';
+      document.getElementById('transactionDate').value = '';
+      document.getElementById('transactionReason').value = '';
+    }
+
+    // Wallet Management
+    function toggleWalletForm() {
+      document.getElementById('walletForm').style.display = 
+        document.getElementById('walletForm').style.display === 'flex' ? 'none' : 'flex';
+    }
+
+    function createWallet() {
+      const name = document.getElementById('walletNameInput').value.trim();
+      const balance = parseFloat(document.getElementById('walletBalanceInput').value) || 0;
+      if (!name) return alert('Enter wallet name');
+      
+      wallets.push({ name, balance });
+      localStorage.setItem('wallets', JSON.stringify(wallets));
+      
+      document.getElementById('walletNameInput').value = '';
+      document.getElementById('walletBalanceInput').value = '';
+      toggleWalletForm();
+      renderMenuWallets();
+      updateSelectedWalletBox();
+    }
+
+    function renderMenuWallets() {
+      const container = document.getElementById('walletListMenu');
+      container.innerHTML = '';
+      wallets.forEach((wallet, index) => {
+        const button = document.createElement('button');
+        button.className = 'wallet-list-button';
+        button.innerHTML = `<span>${wallet.name}</span><span>$${wallet.balance.toFixed(2)}</span>`;
+        button.onclick = () => {
+          selectedWalletIndex = index;
+          localStorage.setItem('selectedWalletIndex', index);
+          updateSelectedWalletBox();
+          document.getElementById('fullScreenMenu').classList.remove('active');
+        };
+        container.appendChild(button);
+      });
+    }
+
+    function updateSelectedWalletBox() {
+      const nameEl = document.getElementById('selectedWalletName');
+      const balanceEl = document.getElementById('selectedWalletBalance');
+      if (selectedWalletIndex !== null && wallets[selectedWalletIndex]) {
+        const wallet = wallets[selectedWalletIndex];
+        nameEl.textContent = wallet.name;
+        balanceEl.textContent = `$${wallet.balance.toFixed(2)}`;
+      } else {
+        nameEl.textContent = 'Select a Wallet';
+        balanceEl.textContent = '$0.00';
+      }
+    }
+
+    function changePin() {
+      const current = prompt('Enter current PIN:');
+      if (current === storedPin) {
+        const newPin = prompt('Enter new 4-digit PIN:');
+        if (newPin && newPin.length === 4 && /^\d+$/.test(newPin)) {
+          localStorage.setItem('finflow_pin', newPin);
+          storedPin = newPin;
+          alert('PIN changed!');
+          document.getElementById('fullScreenMenu').classList.remove('active');
+        } else {
+          alert('Invalid PIN format');
         }
+      } else {
+        alert('Incorrect PIN');
+      }
+    }
 
-        function updatePinDisplay() {
-            const dots = document.querySelectorAll('.pin-dot');
-            dots.forEach((dot, index) => {
-                dot.classList.toggle('empty', index >= currentPin.length);
-            });
-        }
-
-        function submitPin() {
-            if (currentPin.length !== 4) return;
-
-            if (isSettingUpPin) {
-                localStorage.setItem('finflow_pin', currentPin);
-                storedPin = currentPin;
-                isSettingUpPin = false;
-                unlockApp();
-            } else {
-                if (currentPin === storedPin) {
-                    unlockApp();
-                } else {
-                    currentPin = '';
-                    updatePinDisplay();
-                    document.getElementById('pinMessage').textContent = 'Wrong PIN! Try again.';
-                }
-            }
-        }
-
-        function unlockApp() {
-            document.getElementById('pinOverlay').style.display = 'none';
-            document.getElementById('mainPanel').style.display = 'flex';
-            initializeApp();
-        }
-
-        // Your other JavaScript functions continue here...
-        // [Rest of your JavaScript code]
-
-        // Start the app
-        document.addEventListener('DOMContentLoaded', initializePinLock);
-    </script>
+    // Start the app
+    document.addEventListener('DOMContentLoaded', initializePinLock);
+  </script>
 </body>
 </html>
