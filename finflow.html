@@ -291,32 +291,58 @@
       cursor: pointer;
     }
 
+    /* Wallet List with Proper Spacing */
+    .wallet-list-container {
+      display: flex;
+      flex-direction: column;
+      gap: 12px; /* Added proper gap between wallet buttons */
+      width: 100%;
+      max-height: 300px;
+      overflow-y: auto;
+    }
+
     .wallet-list-button {
       width: 250px;
-      padding: 12px 15px;
+      padding: 15px;
       background: #00bfff;
       color: #1f1f2e;
       border: none;
-      border-radius: 10px;
+      border-radius: 12px;
       display: flex;
       justify-content: space-between;
+      align-items: center;
       cursor: pointer;
+      transition: all 0.2s;
+      margin: 0; /* Remove any default margins */
+    }
+
+    .wallet-list-button:hover {
+      background: #009acd;
+      transform: translateY(-2px);
     }
 
     .wallet-form {
       display: none;
       flex-direction: column;
-      gap: 10px;
+      gap: 12px;
       margin-top: 15px;
+      width: 100%;
+      align-items: center;
     }
 
     .wallet-form input {
       width: 200px;
+      padding: 12px;
+      border-radius: 10px;
+      border: none;
+      background: rgba(255,255,255,0.1);
+      color: #fff;
     }
 
     .wallet-form button {
       background: #32cd32;
       color: #fff;
+      width: 200px;
     }
 
     /* Mobile Responsive */
@@ -347,6 +373,15 @@
         width: 55px;
         height: 55px;
         font-size: 1.2em;
+      }
+
+      .wallet-list-button {
+        width: 220px;
+        padding: 12px;
+      }
+
+      .menu-button {
+        width: 220px;
       }
     }
   </style>
@@ -446,7 +481,9 @@
         <button onclick="createWallet()">Save Wallet</button>
       </div>
       <div style="color: white; margin: 10px 0;">Choose a wallet:</div>
-      <div id="walletListMenu"></div>
+      <div class="wallet-list-container" id="walletListMenu">
+        <!-- Wallet buttons will appear here with proper spacing -->
+      </div>
       <button class="menu-button" onclick="changePin()" style="background: #6c757d; margin-top: 20px;">
         Change PIN
       </button>
