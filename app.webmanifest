@@ -1,0 +1,22 @@
+{
+  "name": "FinFlow",
+  "short_name": "FinFlow",
+  "description": "Personal Finance Management App",
+  "start_url": "finflow.html",
+  "display": "standalone",
+  "background_color": "#473f7c",
+  "theme_color": "#667eea",
+  "orientation": "portrait",
+  "icons": [
+    {
+      "src": "finflow.png",
+      "sizes": "192x192",
+      "type": "image/png"
+    },
+    {
+      "src": "finflow.png",
+      "sizes": "512x512", 
+      "type": "image/png"
+    }
+  ]
+}
