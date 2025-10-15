@@ -213,21 +213,25 @@
       margin-top: 10px;
     }
 
-    /* Transaction History with Horizontal Scroll */
+    /* UPDATED: Better Transaction History with Improved Mobile Scrolling */
     .history-scroll-container {
       overflow-x: auto;
       padding-bottom: 10px;
+      -webkit-overflow-scrolling: touch; /* Smooth scrolling on iOS */
+      border-radius: 10px;
     }
 
     .history-table {
-      min-width: 700px;
+      min-width: 650px; /* Reduced from 700px for better fit */
       width: 100%;
     }
 
     .history-header, .history-item {
       display: flex;
-      padding: 12px 0;
+      padding: 10px 0; /* Reduced padding */
       border-bottom: 1px solid rgba(255,255,255,0.1);
+      min-height: 45px;
+      align-items: center;
     }
 
     .history-header {
@@ -235,20 +239,49 @@
       border-bottom: 2px solid #ffd700;
       position: sticky;
       left: 0;
+      background: rgba(31,31,46,0.95);
+      z-index: 10;
     }
 
     .history-header span, .history-item span {
       flex: 1;
-      padding: 0 10px;
+      padding: 0 8px; /* Reduced padding */
       text-align: center;
-      min-width: 80px;
+      min-width: 70px; /* Reduced min-width */
+      font-size: 0.9em;
+      word-break: break-word;
+      overflow: hidden;
+      text-overflow: ellipsis;
     }
 
-    .history-item span:nth-child(1) { flex: 2; text-align: left; }
-    .history-item span:nth-child(2) { flex: 1.5; }
-    .history-item span:nth-child(3) { flex: 1; }
-    .history-item span:nth-child(4) { flex: 1; }
-    .history-item span:nth-child(5) { flex: 3; text-align: left; }
+    /* Better column distribution for mobile */
+    .history-header span:nth-child(1), 
+    .history-item span:nth-child(1) { 
+      flex: 1.2; 
+      text-align: left; 
+      min-width: 90px;
+    }
+    .history-header span:nth-child(2), 
+    .history-item span:nth-child(2) { 
+      flex: 1; 
+      min-width: 80px;
+    }
+    .history-header span:nth-child(3), 
+    .history-item span:nth-child(3) { 
+      flex: 0.8; 
+      min-width: 70px;
+    }
+    .history-header span:nth-child(4), 
+    .history-item span:nth-child(4) { 
+      flex: 0.8; 
+      min-width: 70px;
+    }
+    .history-header span:nth-child(5), 
+    .history-item span:nth-child(5) { 
+      flex: 1.5; 
+      text-align: left; 
+      min-width: 100px;
+    }
 
     /* Menu */
     .full-screen-menu {
@@ -295,7 +328,7 @@
     .wallet-list-container {
       display: flex;
       flex-direction: column;
-      gap: 12px; /* Added proper gap between wallet buttons */
+      gap: 12px;
       width: 100%;
       max-height: 300px;
       overflow-y: auto;
@@ -313,7 +346,7 @@
       align-items: center;
       cursor: pointer;
       transition: all 0.2s;
-      margin: 0; /* Remove any default margins */
+      margin: 0;
     }
 
     .wallet-list-button:hover {
@@ -345,7 +378,7 @@
       width: 200px;
     }
 
-    /* Mobile Responsive */
+    /* UPDATED: Better Mobile Responsive */
     @media (max-width: 768px) {
       body {
         padding: 10px;
@@ -357,11 +390,39 @@
       }
       
       .history-table {
-        min-width: 600px;
+        min-width: 550px; /* Even smaller for mobile */
       }
       
       .history-header, .history-item {
         font-size: 0.8em;
+        padding: 8px 0;
+      }
+      
+      .history-header span, .history-item span {
+        padding: 0 5px;
+        min-width: 60px;
+        font-size: 0.75em;
+      }
+      
+      .history-header span:nth-child(1), 
+      .history-item span:nth-child(1) { 
+        min-width: 70px;
+      }
+      .history-header span:nth-child(2), 
+      .history-item span:nth-child(2) { 
+        min-width: 60px;
+      }
+      .history-header span:nth-child(3), 
+      .history-item span:nth-child(3) { 
+        min-width: 50px;
+      }
+      .history-header span:nth-child(4), 
+      .history-item span:nth-child(4) { 
+        min-width: 50px;
+      }
+      .history-header span:nth-child(5), 
+      .history-item span:nth-child(5) { 
+        min-width: 80px;
       }
       
       .pin-container {
@@ -383,6 +444,55 @@
       .menu-button {
         width: 220px;
       }
+      
+      /* Better scrollbar for mobile */
+      .history-scroll-container::-webkit-scrollbar {
+        height: 6px;
+      }
+      
+      .history-scroll-container::-webkit-scrollbar-thumb {
+        background: rgba(255,215,0,0.5);
+        border-radius: 3px;
+      }
+    }
+
+    /* Extra small mobile optimization */
+    @media (max-width: 480px) {
+      .history-table {
+        min-width: 500px; /* Minimum width for readability */
+      }
+      
+      .history-header span, .history-item span {
+        font-size: 0.7em;
+        padding: 0 3px;
+      }
+      
+      body {
+        padding: 8px;
+      }
+      
+      .wallet-box, .transaction-box, .history-box {
+        padding: 12px;
+      }
+    }
+
+    /* Scrollbar styling for better visibility */
+    .history-scroll-container::-webkit-scrollbar {
+      height: 8px;
+    }
+    
+    .history-scroll-container::-webkit-scrollbar-track {
+      background: rgba(255,255,255,0.1);
+      border-radius: 4px;
+    }
+    
+    .history-scroll-container::-webkit-scrollbar-thumb {
+      background: #ffd700;
+      border-radius: 4px;
+    }
+    
+    .history-scroll-container::-webkit-scrollbar-thumb:hover {
+      background: #ffed4a;
     }
   </style>
 </head>
@@ -497,11 +607,16 @@
     let isSettingUpPin = !storedPin;
     let pinAttempts = 0;
 
-    // Data
+    // Data - CHANGED: transactions are now stored per wallet
     let wallets = JSON.parse(localStorage.getItem('wallets')) || [];
     let selectedWalletIndex = localStorage.getItem('selectedWalletIndex');
     let categories = JSON.parse(localStorage.getItem('categories')) || ['Food', 'Transport', 'Shopping', 'Entertainment'];
-    let transactions = JSON.parse(localStorage.getItem('transactions')) || [];
+    
+    // NEW: Load transactions for each wallet
+    let transactions = {};
+    wallets.forEach((wallet, index) => {
+      transactions[index] = JSON.parse(localStorage.getItem(`transactions_${index}`)) || [];
+    });
 
     // PIN Functions
     function initializePinLock() {
@@ -608,21 +723,26 @@
       });
     }
 
+    // CHANGED: Now shows transactions only for selected wallet
     function initializeTransactionHistory() {
       const container = document.getElementById('historyItems');
       container.innerHTML = '';
-      transactions.forEach(transaction => {
-        const item = document.createElement('div');
-        item.className = 'history-item';
-        item.innerHTML = `
-          <span>${transaction.category}</span>
-          <span>${transaction.date}</span>
-          <span>${transaction.amount}</span>
-          <span>${transaction.type}</span>
-          <span>${transaction.reason}</span>
-        `;
-        container.appendChild(item);
-      });
+      
+      if (selectedWalletIndex !== null && transactions[selectedWalletIndex]) {
+        const walletTransactions = transactions[selectedWalletIndex];
+        walletTransactions.forEach(transaction => {
+          const item = document.createElement('div');
+          item.className = 'history-item';
+          item.innerHTML = `
+            <span>${transaction.category}</span>
+            <span>${transaction.date}</span>
+            <span>${transaction.amount}</span>
+            <span>${transaction.type}</span>
+            <span>${transaction.reason}</span>
+          `;
+          container.appendChild(item);
+        });
+      }
     }
 
     function addCategory() {
@@ -636,6 +756,7 @@
       }
     }
 
+    // CHANGED: Transactions are now stored per wallet
     function addTransaction() {
       const type = document.getElementById('transactionType').value;
       const amount = document.getElementById('transactionAmount').value;
@@ -648,9 +769,19 @@
         return;
       }
 
-      const transaction = { type, amount, date, category, reason, walletIndex: selectedWalletIndex };
-      transactions.push(transaction);
-      localStorage.setItem('transactions', JSON.stringify(transactions));
+      if (selectedWalletIndex === null) {
+        alert('Please select a wallet first');
+        return;
+      }
+
+      const transaction = { type, amount, date, category, reason };
+      
+      // NEW: Store transaction in the specific wallet's transaction list
+      if (!transactions[selectedWalletIndex]) {
+        transactions[selectedWalletIndex] = [];
+      }
+      transactions[selectedWalletIndex].push(transaction);
+      localStorage.setItem(`transactions_${selectedWalletIndex}`, JSON.stringify(transactions[selectedWalletIndex]));
 
       // Update wallet balance
       if (selectedWalletIndex !== null) {
@@ -688,13 +819,19 @@
         document.getElementById('walletForm').style.display === 'flex' ? 'none' : 'flex';
     }
 
+    // UPDATED: Initialize transactions for new wallet
     function createWallet() {
       const name = document.getElementById('walletNameInput').value.trim();
       const balance = parseFloat(document.getElementById('walletBalanceInput').value) || 0;
       if (!name) return alert('Enter wallet name');
       
+      const newWalletIndex = wallets.length;
       wallets.push({ name, balance });
       localStorage.setItem('wallets', JSON.stringify(wallets));
+      
+      // NEW: Initialize empty transactions for the new wallet
+      transactions[newWalletIndex] = [];
+      localStorage.setItem(`transactions_${newWalletIndex}`, JSON.stringify([]));
       
       document.getElementById('walletNameInput').value = '';
       document.getElementById('walletBalanceInput').value = '';
@@ -703,6 +840,7 @@
       updateSelectedWalletBox();
     }
 
+    // UPDATED: Refresh transaction history when switching wallets
     function renderMenuWallets() {
       const container = document.getElementById('walletListMenu');
       container.innerHTML = '';
@@ -714,6 +852,7 @@
           selectedWalletIndex = index;
           localStorage.setItem('selectedWalletIndex', index);
           updateSelectedWalletBox();
+          initializeTransactionHistory(); // NEW: Refresh transaction history
           document.getElementById('fullScreenMenu').classList.remove('active');
         };
         container.appendChild(button);
@@ -752,6 +891,8 @@
 
     // Start the app
     document.addEventListener('DOMContentLoaded', initializePinLock);
+
+    // SERVICE WORKER CODE REMOVED - No more service worker registration
   </script>
 </body>
 </html>
